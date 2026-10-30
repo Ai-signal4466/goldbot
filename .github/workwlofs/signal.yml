@@ -1,0 +1,25 @@
+name: XAUUSD signal
+
+on:
+  schedule:
+    - cron: "3 8-19 * * 1-5"
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Kutubxonalarni o'rnatish
+        run: pip install yfinance pandas numpy requests anthropic
+      - name: Signalni tekshirish
+        run: python signal_job.py
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          TEST: ${{ github.event_name == 'workflow_dispatch' && '1' || '0' }}
